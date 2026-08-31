@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Agencia — Mr. Addamz</title>
+<style>
+  :root{
+    --bg:#0b0f14; --card:#131a22; --card2:#0f151c; --line:#22303c;
+    --gold:#c9a227; --gold2:#f0c975; --text:#e8edf2; --sub:#9fb2c2;
+    --green:#3ecf8e; --amber:#e0a336; --red:#e05c5c; --blue:#4a90d9;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;line-height:1.5;}
+  .wrap{max-width:900px;margin:0 auto;padding:20px 14px 70px;}
+  h1{font-family:Georgia,serif;font-size:1.5rem;color:var(--gold2);margin:0 0 2px;}
+  .subtitle{color:var(--sub);font-size:.85rem;margin:0 0 16px;}
+  .savebar{font-size:.72rem;color:var(--green);min-height:16px;margin-bottom:10px;}
+  nav{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .tab{padding:9px 16px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--sub);font-size:.85rem;font-weight:600;cursor:pointer;}
+  .tab.active{background:var(--gold);color:#1a1408;border-color:var(--gold);}
+  section{display:none;}
+  section.active{display:block;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px;}
+  .grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
+  .stat-label{display:flex;align-items:center;gap:5px;color:var(--sub);font-size:.72rem;margin-bottom:6px;}
+  .stat-value{font-size:1.5rem;font-weight:700;color:var(--gold2);}
+  .stat-sub{font-size:.72rem;color:var(--sub);}
+  input,select,textarea{background:var(--card2);border:1px solid var(--line);border-radius:7px;padding:9px 10px;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;width:100%;}
+  label{display:block;font-size:.72rem;color:var(--sub);margin-bottom:4px;}
+  .btn{border:none;border-radius:8px;padding:10px 16px;font-weight:700;font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none;}
+  .btn-primary{background:var(--gold);color:#1a1408;}
+  .btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--line);}
+  .btn-danger{background:var(--card);color:var(--red);border:1px solid #e05c5c44;}
+  .filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .filters>*{flex:1;min-width:130px;}
+  .actions-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+  .lead-card{cursor:pointer;}
+  .lead-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .lead-name{font-weight:700;font-size:.95rem;}
+  .lead-addr{font-size:.78rem;color:var(--sub);}
+  .lead-meta{font-size:.72rem;color:#5a6b78;margin-top:2px;}
+  .lead-balance{color:var(--green);font-weight:700;font-size:1rem;text-align:right;}
+  .lead-phone{font-size:.75rem;color:var(--sub);text-align:right;}
+  .badge{font-size:.68rem;padding:3px 9px;border-radius:20px;font-weight:700;border:none;}
+  .stage-bar{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .stage-name{width:120px;font-size:.76rem;color:var(--sub);flex-shrink:0;}
+  .stage-track{flex:1;background:var(--card2);border-radius:6px;height:9px;overflow:hidden;}
+  .stage-fill{height:100%;}
+  .stage-count{width:22px;text-align:right;font-size:.78rem;font-weight:700;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50;}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:14px 14px 0 0;padding:18px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .modal-header h3{margin:0;color:var(--gold2);font-size:1.05rem;}
+  .close-x{background:none;border:none;color:var(--sub);font-size:1.4rem;cursor:pointer;line-height:1;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .full{grid-column:1/-1;}
+  .modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end;flex-wrap:wrap;}
+  .detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1a232c;font-size:.88rem;}
+  .detail-row span:first-child{color:var(--sub);}
+  .county-item{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+  .county-name{font-weight:700;font-size:.88rem;}
+  .county-note{font-size:.75rem;color:var(--sub);}
+  .script-title{color:var(--gold2);font-size:.8rem;font-weight:700;margin-bottom:6px;}
+  .script-text{font-size:.95rem;}
+  .empty{text-align:center;color:var(--sub);padding:30px 16px;}
+  code{color:var(--gold2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Panel de Agencia — Surplus Funds</h1>
+  <p class="subtitle">Mr. Addamz · sistema centralizado de leads</p>
+  <div class="savebar" id="saveStatus"></div>
+
+  <nav>
+    <div class="tab active" data-tab="dashboard">Panel</div>
+    <div class="tab" data-tab="leads">Leads</div>
+    <div class="tab" data-tab="condados">Condados</div>
+    <div class="tab" data-tab="guion">Guion</div>
+  </nav>
+
+  <section id="tab-dashboard" class="active"></section>
+  <section id="tab-leads"></section>
+  <section id="tab-condados"></section>
+  <section id="tab-guion"></section>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+const STAGES = [
+  { id: "nuevo", label: "Sin contactar", color: "#8a97a3" },
+  { id: "intentado", label: "Intentado", color: "#c9a227" },
+  { id: "interesado", label: "Interesado", color: "#3ecf8e" },
+  { id: "contrato", label: "Contrato enviado", color: "#4a90d9" },
+  { id: "firmado", label: "Firmado", color: "#2e7d4f" },
+  { id: "pagado", label: "Pagado", color: "#1a5c37" },
+  { id: "no_interesado", label: "No interesado", color: "#b3462c" },
+  { id: "no_localizable", label: "No localizable", color: "#6b6b6b" },
+];
+
+const COUNTY_REF = [
+  { name: "Miami-Dade", tier: "Difícil", link: "https://www.miamidade.realtaxdeed.com", note: "Portal, sin lista — tel (305) 275-1155" },
+  { name: "Broward", tier: "Difícil", link: "https://broward.realtaxdeed.com", note: "Registro requerido" },
+  { name: "Lee (Fort Myers)", tier: "Fácil", link: "https://www.leeclerk.org/departments/courts/property-sales/tax-deed-sales/tax-deed-reports", note: "Lista directa PDF" },
+  { name: "Brevard", tier: "Fácil", link: "https://www.brevardclerk.us/tax-deed-surplus", note: "Lista directa" },
+  { name: "Marion (Ocala)", tier: "Fácil", link: "https://www.marioncountyclerk.org/departments/records-recording/tax-deeds-and-lands-available-for-taxes/unclaimed-funds/", note: "Lista directa, actualizada semanal" },
+  { name: "Manatee", tier: "Fácil", link: "https://www.manateeclerk.com/departments/tax-deeds/list-of-unclaimed-funds/", note: "Lista directa" },
+  { name: "Sumter", tier: "Fácil", link: "https://www.sumterclerk.com/comptroller-services/surplus-funds/", note: "Lista directa" },
+  { name: "Highlands", tier: "Fácil", link: "https://www.highlandsclerkfl.gov/clerk_to_the_board/tax_deeds/surplus.php", note: "Lista directa" },
+  { name: "Pasco", tier: "Fácil", link: "https://www.pascoclerk.com/839/Tax-Deed-Surplus", note: "Lista directa" },
+  { name: "Pinellas", tier: "Difícil", link: "https://taxdeedsales.mypinellasclerk.gov", note: "Caso por caso" },
+  { name: "Collier (Naples)", tier: "Fácil", link: "https://www.collierclerk.com", note: "Verificar sección tax deeds" },
+  { name: "Directorio maestro (67 condados)", tier: "Ref", link: "https://www.flclerks.com/page/findaclerk", note: "Para cualquier condado no listado aquí" },
+];
+
+const CALL_SCRIPT = [
+  { title: "1. Apertura (8 seg)", text: "Hola, ¿hablo con {nombre}? Mi nombre es [Tu nombre], le llamo por un asunto de dinero a su nombre relacionado con la propiedad en {direccion} — ¿tiene un minuto?" },
+  { title: "2. Entrega de valor inmediata", text: "Cuando esa propiedad se vendió en subasta, se vendió por más de lo que se debía en impuestos. Esa diferencia quedó registrada a su nombre en la Corte del Condado de {condado}, aproximadamente ${monto}. Es legalmente suyo, pero el condado no lo va a llamar a avisar." },
+  { title: "3. Autoridad", text: "Yo me dedico a encontrar exactamente estos casos y ayudar a la gente a recuperar lo que es suyo. Yo me encargo de todo el proceso con la Corte; usted solo firma y recibe." },
+  { title: "4. Estructura del acuerdo", text: "No le cuesta nada por adelantado. Cobro un porcentaje solo cuando usted recibe el cheque. Si no le llega dinero, yo no cobro nada. Todo por escrito antes de mover un papel." },
+  { title: "5. Cierre", text: "¿Quiere que le envíe ahora mismo el contrato para revisarlo? Es de una página, se lo mando por texto o correo, y en cuanto lo firme empiezo el proceso." },
+];
+
+let leads = [];
+let currentTab = "dashboard";
+let filters = { search: "", county: "", status: "" };
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function fmtMoney(n){ const v = parseFloat(n)||0; return v.toLocaleString("en-US",{style:"currency",currency:"USD"}); }
+function esc(s){ return (s||"").toString().replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+async function loadLeads(){
+  try{
+    const res = await window.storage.get("leads", false);
+    if(res && res.value) leads = JSON.parse(res.value);
+  }catch(e){ /* no data yet */ }
+  render();
+}
+
+async function saveLeads(){
+  const bar = document.getElementById("saveStatus");
+  bar.textContent = "Guardando…";
+  try{
+    await window.storage.set("leads", JSON.stringify(leads), false);
+    bar.textContent = "✓ Guardado";
+    setTimeout(()=>{ if(bar.textContent==="✓ Guardado") bar.textContent=""; }, 1200);
+  }catch(e){
+    bar.textContent = "Error al guardar";
+    bar.style.color = "var(--red)";
+  }
+}
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab===tab));
+  document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+  document.getElementById("tab-"+tab).classList.add("active");
+  render();
+}
+
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", ()=>switchTab(t.dataset.tab)));
+
+function render(){
+  if(currentTab==="dashboard") renderDashboard();
+  if(currentTab==="leads") renderLeads();
+  if(currentTab==="condados") renderCondados();
+  if(currentTab==="guion") renderGuion();
+}
+
+function computeStats(){
+  const total = leads.length;
+  const totalBalance = leads.reduce((s,l)=>s+(parseFloat(l.balance)||0),0);
+  const signed = leads.filter(l=>l.status==="firmado"||l.status==="pagado");
+  const signedBalance = signed.reduce((s,l)=>s+(parseFloat(l.balance)||0),0);
+  const byStage = STAGES.map(s=>({...s, count: leads.filter(l=>l.status===s.id).length}));
+  const uncontacted = leads.filter(l=>l.status==="nuevo").length;
+  return {total, totalBalance, signed: signed.length, signedBalance, byStage, uncontacted};
+}
+
+function renderDashboard(){
+  const el = document.getElementById("tab-dashboard");
+  const s = computeStats();
+  let html = `<div class="grid4">
+    <div class="card"><div class="stat-label">LEADS TOTALES</div><div class="stat-value">${s.total}</div></div>
+    <div class="card"><div class="stat-label">BALANCE EN PIPELINE</div><div class="stat-value" style="color:var(--green);font-size:1.25rem;">${fmtMoney(s.totalBalance)}</div></div>
+    <div class="card"><div class="stat-label">FIRMADOS / PAGADOS</div><div class="stat-value">${s.signed}</div><div class="stat-sub">${fmtMoney(s.signedBalance)}</div></div>
+    <div class="card"><div class="stat-label">SIN CONTACTAR</div><div class="stat-value" style="color:var(--amber);">${s.uncontacted}</div></div>
+  </div>`;
+
+  if(s.total===0){
+    html += `<div class="card empty">
+      <p>Todavía no tienes leads cargados. Agrega tu primer caso o importa una lista de condado para empezar a llamar hoy.</p>
+      <button class="btn btn-primary" onclick="openLeadForm()">+ Agregar primer lead</button>
+    </div>`;
+  } else {
+    html += `<div class="card"><h3 style="margin:0 0 12px;font-size:.9rem;color:var(--gold2);">Pipeline por etapa</h3>`;
+    s.byStage.forEach(st=>{
+      const pct = s.total ? (st.count/s.total*100) : 0;
+      html += `<div class="stage-bar">
+        <div class="stage-name">${st.label}</div>
+        <div class="stage-track"><div class="stage-fill" style="width:${pct}%;background:${st.color};"></div></div>
+        <div class="stage-count">${st.count}</div>
+      </div>`;
+    });
+    html += `<button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="switchTabExternal('leads')">Ver todos los leads →</button></div>`;
+  }
+  el.innerHTML = html;
+}
+
+function switchTabExternal(tab){ switchTab(tab); }
+
+function getFilteredLeads(){
+  const q = filters.search.toLowerCase();
+  return leads.filter(l=>{
+    const matchesSearch = !q || (l.name||"").toLowerCase().includes(q) || (l.address||"").toLowerCase().includes(q) || (l.taxDeedNumber||"").toLowerCase().includes(q);
+    const matchesCounty = !filters.county || l.county===filters.county;
+    const matchesStatus = !filters.status || l.status===filters.status;
+    return matchesSearch && matchesCounty && matchesStatus;
+  }).sort((a,b)=>(parseFloat(b.balance)||0)-(parseFloat(a.balance)||0));
+}
+
+function renderLeads(){
+  const el = document.getElementById("tab-leads");
+  const counties = [...new Set(leads.map(l=>l.county).filter(Boolean))].sort();
+  const filtered = getFilteredLeads();
+
+  let html = `<div class="filters">
+    <input id="searchInput" placeholder="Buscar nombre, dirección, tax deed #" value="${esc(filters.search)}">
+    <select id="countyFilter"><option value="">Todos los condados</option>${counties.map(c=>`<option value="${esc(c)}" ${filters.county===c?"selected":""}>${esc(c)}</option>`).join("")}</select>
+    <select id="statusFilter"><option value="">Toda etapa</option>${STAGES.map(s=>`<option value="${s.id}" ${filters.status===s.id?"selected":""}>${s.label}</option>`).join("")}</select>
+  </div>
+  <div class="actions-row">
+    <button class="btn btn-primary" onclick="openLeadForm()">+ Nuevo lead</button>
+    <button class="btn btn-ghost" onclick="openImportModal()">⬆ Importar lista</button>
+    <div style="margin-left:auto;font-size:.78rem;color:var(--sub);">${filtered.length} de ${leads.length}</div>
+  </div>`;
+
+  if(filtered.length===0){
+    html += `<div class="card empty">No hay leads que coincidan. Agrega uno nuevo o ajusta los filtros.</div>`;
+  } else {
+    filtered.forEach(l=>{
+      const stage = STAGES.find(s=>s.id===l.status) || STAGES[0];
+      html += `<div class="card lead-card">
+        <div class="lead-top" onclick="openLeadDetail('${l.id}')">
+          <div style="flex:1;min-width:180px;">
+            <div class="lead-name">${esc(l.name)||"(sin nombre)"}</div>
+            <div class="lead-addr">📍 ${esc(l.address)||"Sin dirección"}</div>
+            <div class="lead-meta">${esc(l.county)}${l.taxDeedNumber?" · #"+esc(l.taxDeedNumber):""}</div>
+          </div>
+          <div>
+            <div class="lead-balance">${fmtMoney(l.balance)}</div>
+            ${l.phone?`<div class="lead-phone">${esc(l.phone)}</div>`:""}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;">
+          <select class="badge" style="border:1px solid ${stage.color};background:${stage.color}22;color:${stage.color};" onchange="updateStatus('${l.id}', this.value)">
+            ${STAGES.map(s=>`<option value="${s.id}" style="color:#000;" ${s.id===l.status?"selected":""}>${s.label}</option>`).join("")}
+          </select>
+          ${l.phone?`<a class="btn btn-ghost" style="padding:4px 10px;font-size:.72rem;" href="tel:${esc(l.phone)}">📞 Llamar</a>`:""}
+        </div>
+      </div>`;
+    });
+  }
+  el.innerHTML = html;
+
+  document.getElementById("searchInput").addEventListener("input", e=>{ filters.search=e.target.value; renderLeads(); });
+  document.getElementById("countyFilter").addEventListener("change", e=>{ filters.county=e.target.value; renderLeads(); });
+  document.getElementById("statusFilter").addEventListener("change", e=>{ filters.status=e.target.value; renderLeads(); });
+}
+
+function updateStatus(id, status){
+  const l = leads.find(l=>l.id===id);
+  if(l){ l.status = status; l.lastContact = new Date().toISOString().slice(0,10); saveLeads(); render(); }
+}
+
+function renderCondados(){
+  const el = document.getElementById("tab-condados");
+  let html = `<p style="color:var(--sub);font-size:.85rem;">Referencia rápida de condados verificados. Fáciles = lista directa descargable. Difíciles = portal de subastas, hay que llamar/registrarse.</p>`;
+  COUNTY_REF.forEach(c=>{
+    const color = c.tier==="Fácil"?"var(--green)":c.tier==="Difícil"?"var(--amber)":"var(--blue)";
+    html += `<div class="card county-item">
+      <div><div class="county-name">${esc(c.name)}</div><div class="county-note">${esc(c.note)}</div></div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge" style="color:${color};background:${color}22;">${c.tier}</span>
+        <a class="btn btn-ghost" style="padding:5px 10px;font-size:.75rem;" href="${c.link}" target="_blank">Abrir</a>
+      </div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function renderGuion(){
+  const el = document.getElementById("tab-guion");
+  let html = `<p style="color:var(--sub);font-size:.85rem;">Antes de marcar ten a mano: nombre, dirección, condado y monto. Sin esos 4 datos no llames — pierde fuerza.</p>`;
+  CALL_SCRIPT.forEach(s=>{
+    html += `<div class="card"><div class="script-title">${esc(s.title)}</div><div class="script-text">${esc(s.text)}</div></div>`;
+  });
+  el.innerHTML = html;
+}
+
+// ---- Modals ----
+function closeModal(){ document.getElementById("modalRoot").innerHTML = ""; }
+
+function openLeadForm(existing){
+  const l = existing || {id:uid(), name:"",phone:"",email:"",address:"",county:"",taxDeedNumber:"",balance:"",saleDate:"",status:"nuevo",notes:"",lastContact:""};
+  const isNew = !existing;
+  document.getElementById("modalRoot").innerHTML = `
+  <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+    <div class="modal">
+      <div class="modal-header"><h3>${isNew?"Nuevo lead":"Editar lead"}</h3><button class="close-x" onclick="closeModal()">×</button></div>
+      <div class="form-grid">
+        <div class="full"><label>Nombre</label><input id="f_name" value="${esc(l.name)}"></div>
+        <div><label>Teléfono</label><input id="f_phone" value="${esc(l.phone)}"></div>
+        <div><label>Email</label><input id="f_email" value="${esc(l.email)}"></div>
+        <div class="full"><label>Dirección</label><input id="f_address" value="${esc(l.address)}"></div>
+        <div><label>Condado</label><input id="f_county" value="${esc(l.county)}"></div>
+        <div><label>Tax Deed #</label><input id="f_taxDeedNumber" value="${esc(l.taxDeedNumber)}"></div>
+        <div><label>Balance ($)</label><input id="f_balance" value="${esc(l.balance)}"></div>
+        <div><label>Fecha de venta</label><input id="f_saleDate" value="${esc(l.saleDate)}"></div>
+        <div class="full"><label>Estado</label>
+          <select id="f_status">${STAGES.map(s=>`<option value="${s.id}" ${s.id===l.status?"selected":""}>${s.label}</option>`).join("")}</select>
+        </div>
+        <div class="full"><label>Notas</label><textarea id="f_notes" rows="3">${esc(l.notes)}</textarea></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveLeadForm('${l.id}', ${isNew})">✓ Guardar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function saveLeadForm(id, isNew){
+  const data = {
+    id, name: document.getElementById("f_name").value, phone: document.getElementById("f_phone").value,
+    email: document.getElementById("f_email").value, address: document.getElementById("f_address").value,
+    county: document.getElementById("f_county").value, taxDeedNumber: document.getElementById("f_taxDeedNumber").value,
+    balance: document.getElementById("f_balance").value, saleDate: document.getElementById("f_saleDate").value,
+    status: document.getElementById("f_status").value, notes: document.getElementById("f_notes").value,
+    lastContact: ""
+  };
+  if(isNew){ leads.unshift(data); }
+  else { const idx = leads.findIndex(l=>l.id===id); if(idx>-1) leads[idx] = {...leads[idx], ...data}; }
+  saveLeads();
+  closeModal();
+  switchTab("leads");
+}
+
+function openLeadDetail(id){
+  const l = leads.find(l=>l.id===id);
+  if(!l) return;
+  const stage = STAGES.find(s=>s.id===l.status) || STAGES[0];
+  document.getElementById("modalRoot").innerHTML = `
+  <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+    <div class="modal">
+      <div class="modal-header"><h3>${esc(l.name)||"Detalle del lead"}</h3><button class="close-x" onclick="closeModal()">×</button></div>
+      <div class="detail-row"><span>Dirección</span><span>${esc(l.address)||"—"}</span></div>
+      <div class="detail-row"><span>Condado</span><span>${esc(l.county)||"—"}</span></div>
+      <div class="detail-row"><span>Tax Deed #</span><span>${esc(l.taxDeedNumber)||"—"}</span></div>
+      <div class="detail-row"><span>Balance</span><span style="color:var(--green);font-weight:700;">${fmtMoney(l.balance)}</span></div>
+      <div class="detail-row"><span>Fecha de venta</span><span>${esc(l.saleDate)||"—"}</span></div>
+      <div class="detail-row"><span>Teléfono</span><span>${esc(l.phone)||"—"}</span></div>
+      <div class="detail-row"><span>Email</span><span>${esc(l.email)||"—"}</span></div>
+      <div class="detail-row"><span>Último contacto</span><span>${esc(l.lastContact)||"—"}</span></div>
+      ${l.notes?`<div style="margin-top:10px;"><div style="color:var(--sub);font-size:.75rem;margin-bottom:3px;">Notas</div><div style="background:var(--card2);padding:10px;border-radius:6px;">${esc(l.notes)}</div></div>`:""}
+      <div style="margin-top:12px;">
+        <label>Estado</label>
+        <select style="border-color:${stage.color};color:${stage.color};font-weight:700;" onchange="updateStatus('${l.id}', this.value); openLeadDetail('${l.id}')">
+          ${STAGES.map(s=>`<option value="${s.id}" style="color:#000;" ${s.id===l.status?"selected":""}>${s.label}</option>`).join("")}
+        </select>
+      </div>
+      <div class="modal-actions">
+        ${l.phone?`<a class="btn btn-primary" href="tel:${esc(l.phone)}">📞 Llamar ahora</a>`:""}
+        <button class="btn btn-ghost" onclick='closeModal(); openLeadForm(leads.find(x=>x.id==="${l.id}"))'>✎ Editar</button>
+        <button class="btn btn-danger" style="margin-left:auto;" onclick="deleteLead('${l.id}')">🗑 Eliminar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function deleteLead(id){
+  leads = leads.filter(l=>l.id!==id);
+  saveLeads();
+  closeModal();
+  switchTab("leads");
+}
+
+function openImportModal(){
+  document.getElementById("modalRoot").innerHTML = `
+  <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+    <div class="modal">
+      <div class="modal-header"><h3>Importar lista de condado</h3><button class="close-x" onclick="closeModal()">×</button></div>
+      <p style="font-size:.82rem;color:var(--sub);margin-top:0;">Pega filas separadas por coma, una por línea, en este orden:<br><code>dirección, balance, tax deed #, fecha venta, condado, nombre (opcional), teléfono (opcional)</code></p>
+      <textarea id="importText" rows="10" style="font-family:monospace;font-size:.78rem;" placeholder="1713 SE 26TH TER CAPE CORAL FL, 176430.85, 2023001305, 2/20/2024, Lee County"></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="doImport()">⬆ Importar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function doImport(){
+  const text = document.getElementById("importText").value.trim();
+  const lines = text.split("\n").filter(Boolean);
+  const newLeads = [];
+  lines.forEach(line=>{
+    const parts = line.split(",").map(p=>p.replace(/^"|"$/g,"").trim());
+    if(parts.length<2) return;
+    const [address, balance, taxDeedNumber, saleDate, county, name, phone] = parts;
+    if(!address) return;
+    newLeads.push({
+      id: uid(), name: name||"", phone: phone||"", email:"", address: address||"",
+      county: county||"", taxDeedNumber: taxDeedNumber||"",
+      balance: balance ? balance.replace(/[^0-9.]/g,"") : "",
+      saleDate: saleDate||"", status:"nuevo", notes:"", lastContact:""
+    });
+  });
+  if(newLeads.length){ leads = [...newLeads, ...leads]; saveLeads(); }
+  closeModal();
+  switchTab("leads");
+}
+
+loadLeads();
+</script>
+</body>
+</html>
